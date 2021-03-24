@@ -9,7 +9,9 @@ export default function Home() {
   const componentDidMount = () =>{
 
   }
-
+  const saveTask = (event) => {
+    console.log("menee")
+  }
   return (
     <div className="container">
       <Head>
@@ -17,143 +19,74 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
          <div className="grid">
           <div className="row">
             <div className="card">
               <h2>ToDO:</h2>
-              <label htmlFor="task">Tehtävä:</label>  
               <div className="row inputDiv">
-                <input type="text" className="taskInput" name="task" placeholder="Siivoa vessa..."/>
+                <div className="taskLabel"><label htmlFor="task" >Tehtävä:</label></div>
+                <div className="taskInput"><input type="text"  name="task" placeholder="Siivoa vessa..."/></div>
               </div>
-              <label htmlFor="task1">Päivämäärä: </label>  
               <div className="row inputDiv">
+                <label htmlFor="task1" className="taskLabel">Päivämäärä: </label>  
                 <input type="date" className="taskInput" name="task1" placeholder="Siivoa vessa..."/>
               </div>
-              <label htmlFor="task1">Kellonaika: </label>  
               <div className="row inputDiv">
+                <label htmlFor="task1" className="taskLabel">Kellonaika: </label>  
                 <input type="time" className="taskInput" name="task1" placeholder="Siivoa vessa..."/>
               </div>
-              <label htmlFor="task1">Tehtävän kesto h: </label>
               <div className="row inputDiv">
+                <label htmlFor="task1" className="taskLabel">Tehtävän kesto h: </label>
                 <input type="number" className="taskInput" name="task1" placeholder=""/>
               </div>
+              <button type="submit" id="taskSubmit" onClick={saveTask}>Tallenna</button>
             </div>
             <div className="card">
-             liirum laarum
-            
+            liirum laarum  liirum laarum  liirum laarum  liirum laarum
+            liirum laarum  liirum   liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarumlaarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum
             </div>
           </div>
         </div>
-      </main>
 
       <footer>
-        
+        vccxvx
       </footer>
 
       <style jsx>{`
 
-        .inputDiv{
-          margin-bottom: 10px;
-          display: block;
-          justify: right;
-          padding-left: 5em;
-        }
-
-        .row{
+        .taskInput{
+          margin-left: auto;
+          //margin-left: 5em;
+          order:2;
           display: flex;
           flex-direction: row;
-        }
-
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
           justify-content: center;
           align-items: center;
         }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .taskLabel{
+          float: left;
+          margin-right: 15rem;
+        }
+        .inputDiv{
+          margin-bottom: 10px;
           width: auto;
+          display: block;
         }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
         .grid {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-          width:auto;
-          margin-top: 3rem;
+          width:100%;
+          margin-top: -10%;
         }
-
+        .row{
+          display: flex;
+          flex-direction: row;
+          width: auto;
+        }
         .card {
-          margin: 1rem;
+          margin: 5%;
           flex-basis: auto;
           padding: 1.5rem 1.5rem 1.5rem 1.5rem;
           text-align: left;
@@ -162,20 +95,51 @@ export default function Home() {
           border: 1px solid #eaeaea;
           border-radius: 10px;
           transition: color 0.15s ease, border-color 0.15s ease;
-          width: auto;
+          width:auto;
         }
-
+        .container {
+          min-height: 100vh;
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width:auto;
+        }
+        footer {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 50px;
+          width: 100%;
+          overflow: hidden;
+          border-top: 1px solid #eaeaea;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
         .card:hover,
         .card:focus,
         .card:active {
           color: #0070f3;
           border-color: #0070f3;
         }
-       
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
+        @media (max-width: 1280px){
+          .card{
+            width:auto;
+          }
+        }
+        @media (max-width: 900px){
+          .row{
+            flex: 1;
+            display: flex;
             flex-direction: column;
+            align-items: center;
+            width:auto;
           }
         }
       `}</style>
