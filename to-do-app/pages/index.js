@@ -1,16 +1,73 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, {useEffect, useState } from 'react'
+import Axios from 'axios'
+import Moment from 'moment'
+import _ from 'lodash'
 
 export default function Home() {
 
-  const [savedTasks, setTask] = useState([]);
+  const [savedTasks, setTasks] = useState();
+  const [taskName, setTaskName] = useState("");
+  const [taskDate, setTaskDate] = useState(Moment(Date.now()).format('YYYY-MM-DD'));
+  const [taskTime, setTaskTime] = useState(Moment(Date.now()).format('HH:mm'));
+  const [taskDuration, setTaskDuration] = useState(0);
+ 
+  useEffect(()=>{
+    Axios.get('http://localhost:3001/toDo/get')
+    .then(async(res)=>{
+      if(Array.isArray(res.data)){
+        //console.log(res.data)
+        let temp = saveTasks(res.data)
+        await setTasks(temp)
+      }
+      
+    })
 
-  const componentDidMount = () =>{
+  },[])
 
+  const saveTasks = (tasks)=>{
+    let toDoTasks = tasks
+    let taskArray = [];
+    
+    _.forEach(toDoTasks, (toDoTask, index)=>{
+      let element = <div style={{'background': '#08E8DE'}}><p>Tehtävä {index}: {toDoTask.name}, {Moment(toDoTask.date).format('DD.MM.YYYY')}, {toDoTask.time}, {toDoTask.duration}</p></div>
+      taskArray.push(element)
+    })
+    
+    return taskArray
   }
+
   const saveTask = (event) => {
-    console.log("menee")
+    event.preventDefault();
+    Axios.post('http://localhost:3001/toDo/post',{
+      name: taskName,
+      date: taskDate,
+      time: taskTime,
+      duration: taskDuration
+    }).then((res)=>{
+      console.log(res)
+    })
+    setTaskName("")
+  }
+  const handleChange = (event) =>{
+    switch(event.target.id){
+      case "taskName":
+        setTaskName(event.target.value)
+        return
+      case "taskDate":
+        console.log(Moment(event.target.value).format('DD.MM.YYYY'))
+        setTaskDate(event.target.value)
+        return
+      case "taskTime":
+        setTaskTime(event.target.value)
+        return
+      case "taskDuration":
+        setTaskDuration(event.target.value)
+        return
+      default:
+        return
+    }
   }
   return (
     <div className="container">
@@ -23,27 +80,30 @@ export default function Home() {
           <div className="row">
             <div className="card">
               <h2>ToDO:</h2>
-              <div className="row inputDiv">
-                <div className="taskLabel"><label htmlFor="task" >Tehtävä:</label></div>
-                <div className="taskInput"><input type="text"  name="task" placeholder="Siivoa vessa..."/></div>
-              </div>
-              <div className="row inputDiv">
-                <label htmlFor="task1" className="taskLabel">Päivämäärä: </label>  
-                <input type="date" className="taskInput" name="task1" placeholder="Siivoa vessa..."/>
-              </div>
-              <div className="row inputDiv">
-                <label htmlFor="task1" className="taskLabel">Kellonaika: </label>  
-                <input type="time" className="taskInput" name="task1" placeholder="Siivoa vessa..."/>
-              </div>
-              <div className="row inputDiv">
-                <label htmlFor="task1" className="taskLabel">Tehtävän kesto h: </label>
-                <input type="number" className="taskInput" name="task1" placeholder=""/>
-              </div>
-              <button type="submit" id="taskSubmit" onClick={saveTask}>Tallenna</button>
+              <form onSubmit={saveTask}>
+                <div className="row inputDiv">
+                  <label className="taskLabel" htmlFor="task" >Tehtävä:</label>
+                  <input id="taskName" className="taskInput" type="text" name="task" placeholder="Siivoa vessa..." value={taskName} onChange={handleChange}/>
+                </div>
+                <div className="row inputDiv">
+                  <label htmlFor="taskDate" className="taskLabel">Päivämäärä: </label>  
+                  <input id="taskDate" type="date" className="taskInput" name="taskDate" placeholder={taskDate} value={taskDate} onChange={handleChange}/>
+                </div>
+                <div className="row inputDiv">
+                  <label htmlFor="taskTime" className="taskLabel">Kellonaika: </label>  
+                  <input id="taskTime" type="text" onFocus={(e)=> e.target.type = 'time'} onBlur={(e)=> e.target.type = 'text'}
+                  className="taskInput" name="taskTime" placeholder={taskTime} value={taskTime} onChange={handleChange}/>
+                </div>
+                <div className="row inputDiv">
+                  <label htmlFor="taskDuration" className="taskLabel">Tehtävän kesto h: </label>
+                  <input id="taskDuration" type="number" className="taskInput" name="taskDuration" placeholder="" value={taskDuration} onChange={handleChange}/>
+                </div>
+                <button type="submit" id="taskSubmit">Tallenna</button>
+              </form>
             </div>
+            
             <div className="card">
-            liirum laarum  liirum laarum  liirum laarum  liirum laarum
-            liirum laarum  liirum   liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarumlaarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum  liirum laarum
+              {savedTasks}
             </div>
           </div>
         </div>
@@ -53,7 +113,9 @@ export default function Home() {
       </footer>
 
       <style jsx>{`
-
+        .redBackground{
+          background: red; 
+        }
         .taskInput{
           margin-left: auto;
           //margin-left: 5em;
