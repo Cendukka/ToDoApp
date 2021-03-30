@@ -4,6 +4,7 @@ import React, {useEffect, useState } from 'react'
 import Axios from 'axios'
 import Moment from 'moment'
 import _ from 'lodash'
+import ToDoDiv from '../pages/assets/toDoDiv'
 
 export default function Home() {
 
@@ -12,43 +13,66 @@ export default function Home() {
   const [taskDate, setTaskDate] = useState(Moment(Date.now()).format('YYYY-MM-DD'));
   const [taskTime, setTaskTime] = useState(Moment(Date.now()).format('HH:mm'));
   const [taskDuration, setTaskDuration] = useState(0);
+
+  const toDoApiUrl = 'http://localhost:3001/toDo/'
  
   useEffect(()=>{
-    Axios.get('http://localhost:3001/toDo/get')
-    .then(async(res)=>{
-      if(Array.isArray(res.data)){
-        //console.log(res.data)
-        let temp = saveTasks(res.data)
-        await setTasks(temp)
-      }
-      
-    })
+    getTaskDB();
 
   },[])
-
-  const saveTasks = (tasks)=>{
-    let toDoTasks = tasks
-    let taskArray = [];
-    
-    _.forEach(toDoTasks, (toDoTask, index)=>{
-      let element = <div style={{'background': '#08E8DE'}}><p>Tehtävä {index}: {toDoTask.name}, {Moment(toDoTask.date).format('DD.MM.YYYY')}, {toDoTask.time}, {toDoTask.duration}</p></div>
-      taskArray.push(element)
+  const getTaskDB = () =>{
+    Axios.get(toDoApiUrl+'get')
+    .then((res)=>{
+      if(Array.isArray(res.data)){
+        console.log(res.data)
+        let temp = saveTasks(res.data)
+        setTasks(temp)
+      }
+      
+    }).catch((error)=>{
+      console.log(error)
     })
-    
-    return taskArray
   }
+  const deleteTaskDB = (event)=>{
+    
+    const toDoID = event.target.id
+     Axios.delete(toDoApiUrl+'delete', {data: {ID: toDoID}})
+     .then(res=>{
+        
+        getTaskDB();
+     })
+     .catch((err)=>{
+       console.log(err)
+     })
 
-  const saveTask = (event) => {
+    // })
+  }
+  const saveTaskDB = (event) => {
     event.preventDefault();
-    Axios.post('http://localhost:3001/toDo/post',{
+    Axios.post(toDoApiUrl+'post',{
       name: taskName,
       date: taskDate,
       time: taskTime,
       duration: taskDuration
     }).then((res)=>{
       console.log(res)
+      getTaskDB()
     })
     setTaskName("")
+    setTaskDuration(0)
+    
+  }
+  const saveTasks = (tasks)=>{
+    let toDoTasks = tasks
+    let taskArray = [];
+    
+    _.forEach(toDoTasks, (toDoTask, index)=>{
+      let element = <ToDoDiv key={"todo-"+index} toDoTask={toDoTask} index={index} delete={deleteTaskDB} />
+      
+      taskArray.push(element)
+    })
+    
+    return taskArray
   }
   const handleChange = (event) =>{
     switch(event.target.id){
@@ -78,9 +102,9 @@ export default function Home() {
 
          <div className="grid">
           <div className="row">
-            <div className="card">
-              <h2>ToDO:</h2>
-              <form onSubmit={saveTask}>
+            <div className="card-add">
+              <h2>Lisää ToDO:</h2>
+              <form onSubmit={saveTaskDB}>
                 <div className="row inputDiv">
                   <label className="taskLabel" htmlFor="task" >Tehtävä:</label>
                   <input id="taskName" className="taskInput" type="text" name="task" placeholder="Siivoa vessa..." value={taskName} onChange={handleChange}/>
@@ -102,15 +126,12 @@ export default function Home() {
               </form>
             </div>
             
-            <div className="card">
+            <div className="card-added">
+              <h2>ToDos:</h2>
               {savedTasks}
             </div>
           </div>
         </div>
-
-      <footer>
-        vccxvx
-      </footer>
 
       <style jsx>{`
         .redBackground{
@@ -147,7 +168,7 @@ export default function Home() {
           flex-direction: row;
           width: auto;
         }
-        .card {
+        .card-add {
           margin: 5%;
           flex-basis: auto;
           padding: 1.5rem 1.5rem 1.5rem 1.5rem;
@@ -157,7 +178,26 @@ export default function Home() {
           border: 1px solid #eaeaea;
           border-radius: 10px;
           transition: color 0.15s ease, border-color 0.15s ease;
-          width:auto;
+          width:40%;
+          height:auto;
+          position: fixed;
+          top: 0;
+          left:0
+        }
+        .card-added {
+          margin: 5%;
+          flex-basis: auto;
+          padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+          text-align: left;
+          color: inherit;
+          text-decoration: none;
+          border: 1px solid #eaeaea;
+          border-radius: 10px;
+          transition: color 0.15s ease, border-color 0.15s ease;
+          width: 40%;
+          position: absolute;
+          top: 0;
+          right: 0;
         }
         .container {
           min-height: 100vh;
@@ -168,30 +208,25 @@ export default function Home() {
           align-items: center;
           width:auto;
         }
-        footer {
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          height: 50px;
-          width: 100%;
-          overflow: hidden;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
         a {
           color: inherit;
           text-decoration: none;
         }
-        .card:hover,
-        .card:focus,
-        .card:active {
+        .card-add:hover,
+        .card-add:focus,
+        .card-add:active,
+        .card-added:hover,
+        .card-added:focus,
+        .card-added:active
+         {
           color: #0070f3;
           border-color: #0070f3;
         }
-        @media (max-width: 1280px){
-          .card{
+        @media (max-width: 1475px){
+          .card-add{
+            width:auto;
+          }
+          .card-added{
             width:auto;
           }
         }
