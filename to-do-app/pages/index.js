@@ -13,18 +13,18 @@ export default function Home() {
   const [taskDate, setTaskDate] = useState(Moment(Date.now()).format('YYYY-MM-DD'));
   const [taskTime, setTaskTime] = useState(Moment(Date.now()).format('HH:mm'));
   const [taskDuration, setTaskDuration] = useState(0);
+  const [chosenDate, setChosenDate] = useState(Moment(Date.now()).format('YYYY-MM-DD'))
 
   const toDoApiUrl = 'http://localhost:3001/toDo/'
  
   useEffect(()=>{
     getTaskDB();
 
-  },[])
+  },[chosenDate])
   const getTaskDB = () =>{
-    Axios.get(toDoApiUrl+'get')
+    Axios.get(toDoApiUrl+'get/'+chosenDate)
     .then((res)=>{
       if(Array.isArray(res.data)){
-        console.log(res.data)
         let temp = saveTasks(res.data)
         setTasks(temp)
       }
@@ -68,10 +68,10 @@ export default function Home() {
     
     _.forEach(toDoTasks, (toDoTask, index)=>{
       let element = <ToDoDiv key={"todo-"+index} toDoTask={toDoTask} index={index} delete={deleteTaskDB} />
-      
+    
       taskArray.push(element)
     })
-    
+    console.log(taskArray[0].props.toDoTask.date)
     return taskArray
   }
   const handleChange = (event) =>{
@@ -80,7 +80,7 @@ export default function Home() {
         setTaskName(event.target.value)
         return
       case "taskDate":
-        console.log(Moment(event.target.value).format('DD.MM.YYYY'))
+        
         setTaskDate(event.target.value)
         return
       case "taskTime":
@@ -88,6 +88,9 @@ export default function Home() {
         return
       case "taskDuration":
         setTaskDuration(event.target.value)
+        return
+      case "filterDate":
+        setChosenDate(event.target.value)
         return
       default:
         return
@@ -118,22 +121,24 @@ export default function Home() {
                   <input id="taskTime" type="text" onFocus={(e)=> e.target.type = 'time'} onBlur={(e)=> e.target.type = 'text'}
                   className="taskInput" name="taskTime" placeholder={taskTime} value={taskTime} onChange={handleChange}/>
                 </div>
-                <div className="row inputDiv">
-                  <label htmlFor="taskDuration" className="taskLabel">Tehtävän kesto h: </label>
-                  <input id="taskDuration" type="number" className="taskInput" name="taskDuration" placeholder="" value={taskDuration} onChange={handleChange}/>
-                </div>
                 <button type="submit" id="taskSubmit">Tallenna</button>
               </form>
             </div>
             
             <div className="card-added">
               <h2>ToDos:</h2>
+              <div className="filters">
+                <input id="filterDate" className="filter" type="date" value={chosenDate} onChange={handleChange}/>
+              </div>
               {savedTasks}
             </div>
           </div>
         </div>
 
       <style jsx>{`
+        .filter{
+          margin-bottom: 4%
+        }
         .redBackground{
           background: red; 
         }
